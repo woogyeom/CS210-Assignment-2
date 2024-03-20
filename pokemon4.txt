@@ -1,0 +1,11 @@
+bug: careful
+electric: hardy
+fairy: impish, naughty, sassy
+fighting: adamant, careful, hasty, lonely, serious
+fire: brave, brave, gentle, hardy, impish, lax, modest, naughty, rash, timid
+flying: bold, impish, impish, mild, naive, quiet, rash
+grass: adamant, bashful, bold, calm, docile, gentle, lonely, naive, quiet, quiet, sassy
+ground: bashful, bashful, bold, docile, gentle, hardy, hardy, impish, impish, jolly, naughty, quiet
+normal: brave, brave, calm, jolly, lax, mild, naughty, quiet, relaxed, serious
+rock: bashful, docile, impish, mild, naughty
+water: hardy
