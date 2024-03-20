@@ -1,8 +1,8 @@
 import csv
-from collections import Counter
+from collections import Counter, defaultdict
 
 # 1
-with open('pokemonTrain.csv', newline='') as csvfile:
+with open('pokemonTrain.csv', 'r', newline='') as csvfile:
     reader = csv.DictReader(csvfile)
     fire_count = 0
     fire_above_40_count = 0
@@ -22,16 +22,11 @@ with open('pokemonTrain.csv', newline='') as csvfile:
     hp_count_above_40 = 0
     hp_count_till_40 = 0
 
-    weakness_dict = {}
+    weakness_dict = defaultdict(list)
 
     for row in reader:
         if row['type'] != 'NaN':
-            pokemontype = row['type']
-            weakness = row['weakness']
-            if pokemontype in weakness_dict:
-                weakness_dict[pokemontype].append(weakness)
-            else:
-                weakness_dict[pokemontype] = [weakness]
+            weakness_dict[row['weakness']].append(row['type'])
 
             if row['type'] == 'fire':
                 fire_count += 1
@@ -97,23 +92,30 @@ else:
 with open('pokemon1.txt', 'w') as file:
     file.write(f"Percentage of fire type Pokemons at or above level 40 = {percent}")
 
+common_pokemon_type_dict = {}
+for weakness, pokemon_type in weakness_dict.items():
+    pokemon_type_counter = Counter(pokemon_type)
+    common_pokemon_type = pokemon_type_counter.most_common()
+    common_pokemon_type = sorted(common_pokemon_type, key=lambda x: (-x[1], x[0]))
+    if common_pokemon_type:
+        common_pokemon_type_dict[weakness] = common_pokemon_type[0][0]
+
+common_pokemon_type_dict = dict(sorted(common_pokemon_type_dict.items()))
+
+print(common_pokemon_type_dict)
+
 # 2 & 3
 with open('pokemonTrain.csv', newline='') as csvfile:
-    common_weakness_dict = {}
-    for pokemontype, weakness in weakness_dict.items():
-        weakness_counter = Counter(weakness)
-        common_weakness = weakness_counter.most_common(1)
-        if common_weakness:
-            common_weakness_dict[pokemontype] = common_weakness[0][0]
-    print(common_weakness_dict)
-    print(f'atk <= 40: {atk_till_40}, atk > 40: {atk_above_40}, def <= 40: {def_till_40}, def > 40: {def_above_40}, hp <= 40: {hp_till_40}, hp > 40: {hp_above_40}')
     reader = csv.DictReader(csvfile)
     rows = list(reader)
     for row in rows:
         if row['type'] == 'NaN':
-            for key, val in common_weakness_dict.items():
-                if val == row['weakness']:
-                    row['type'] = key
+            for weakness, pokemon_type in common_pokemon_type_dict.items():
+                if weakness == row['weakness']:
+                    row['type'] = pokemon_type
+
+            if row['id'] == '136.0':
+                print(row)
         if float(row['level']) <= 40:
             if row['atk'] == 'NaN':
                 row['atk'] = atk_till_40
@@ -136,20 +138,19 @@ with open('pokemonResult.csv', 'w', newline='') as resultfile:
     writer.writerows(rows)
 
 # 4
-type_personality_dict = {}
+type_personality_dict = defaultdict(set)
 with open('pokemonResult.csv', 'r', newline='') as csvfile:
     reader = csv.DictReader(csvfile)
     for row in reader:
         pokemon_type = row['type']
         personality = row['personality']
-        if pokemon_type in type_personality_dict:
-            type_personality_dict[pokemon_type].append(personality)
-        else:
-            type_personality_dict[pokemon_type] = [personality]
+        type_personality_dict[pokemon_type].add(personality)
+
 type_personality_dict = dict(sorted(type_personality_dict.items()))
+
 with open('pokemon4.txt', 'w') as file:
     for pokemon_type, personality in type_personality_dict.items():
-        personality.sort()
+        personality = sorted(personality)
         file.write(f"{pokemon_type}: {', '.join(personality)}\n")
 
 # 5
