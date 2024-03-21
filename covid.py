@@ -1,8 +1,8 @@
 import csv
 from collections import Counter, defaultdict
-import numpy as np
 
-province_tude_dict = defaultdict(list)
+province_latitude_dict = defaultdict(list)
+province_longitude_dict = defaultdict(list)
 province_city_dict = defaultdict(list)
 province_symptom_dict = defaultdict(list)
 
@@ -10,37 +10,41 @@ with open('covidTrain.csv', 'r', newline='') as csvfile:
     reader = csv.DictReader(csvfile)
     for row in reader:
         province = row['province']
-        latitude = float(row['latitude'])
-        longitude = float(row['longitude'])
-        province_tude_dict[province].append((float(latitude), float(longitude)))
+        province_latitude_dict[province].append(row['latitude'])
+        province_longitude_dict[province].append(row['longitude'])
         if row['city'] != 'NaN':
             province_city_dict[province].append(row['city'])
         if row['symptoms'] != 'NaN':
             symptoms = [symptom.strip() for symptom in row['symptoms'].split(';')]
             province_symptom_dict[province].extend(symptoms)
 
-province_avg_tude_dict = defaultdict(list)
-for province, tude_list in province_tude_dict.items():
+province_avg_latitude_dict = defaultdict(list)
+province_avg_longitude_dict = defaultdict(list)
+for province, latitudes in province_latitude_dict.items():
     sum_latitude = 0
-    sum_longitude = 0
     latitude_count = 0
-    longitude_count = 0
-    for tude in tude_list:
-        if not np.isnan(tude[0]):
-            sum_latitude += tude[0]
+    for latitude in latitudes:
+        if latitude != 'NaN':
+            sum_latitude += float(latitude)
             latitude_count += 1
-        if not np.isnan(tude[1]):
-            sum_longitude += tude[1]
-            longitude_count += 1
     if latitude_count > 0:
         avg_latitude = (sum_latitude / latitude_count)
     else:
         avg_latitude = 0
+    province_avg_latitude_dict[province].append(avg_latitude)
+
+for province, longitudes in province_longitude_dict.items():
+    sum_longitude = 0
+    longitude_count = 0
+    for longitude in longitudes:
+        if longitude != 'NaN':
+            sum_longitude += float(longitude)
+            longitude_count += 1
     if longitude_count > 0:
         avg_longitude = (sum_longitude / longitude_count)
     else:
         avg_longitude = 0
-    province_avg_tude_dict[province].append((avg_latitude, avg_longitude))
+    province_avg_longitude_dict[province].append(avg_longitude)
 
 common_province_city_dict = {}
 for province, city in province_city_dict.items():
@@ -64,7 +68,7 @@ with open('covidTrain.csv', 'r', newline='') as csvfile:
     for row in rows:
         province = row['province']
         if row['age'].__contains__('-'):
-            age = round(((int)(row['age'].split('-')[0]) + (int)(row['age'].split('-')[1])) / 2)
+            row['age'] = round(((int)(row['age'].split('-')[0]) + (int)(row['age'].split('-')[1])) / 2)
         date = row['date_onset_symptoms'].split('.')
         new_date = date[1] + '.' + date[0] + '.' + date[2]
         row['date_onset_symptoms'] = new_date
@@ -75,9 +79,9 @@ with open('covidTrain.csv', 'r', newline='') as csvfile:
         new_date = date[1] + '.' + date[0] + '.' + date[2]
         row['date_confirmation'] = new_date
         if row['latitude'] == 'NaN':
-            row['latitude'] = round((province_avg_tude_dict[province][0][0]), 2)
+            row['latitude'] = round((province_avg_latitude_dict[province][0]), 2)
         if row['longitude'] == 'NaN':
-            row['latitude'] = round((province_avg_tude_dict[province][0][1]), 2)
+            row['longitude'] = round((province_avg_longitude_dict[province][0]), 2)
         if row['city'] == 'NaN':
             row['city'] = common_province_city_dict[province]
         if row['symptoms'] == 'NaN':

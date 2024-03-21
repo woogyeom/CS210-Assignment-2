@@ -102,8 +102,6 @@ for weakness, pokemon_type in weakness_dict.items():
 
 common_pokemon_type_dict = dict(sorted(common_pokemon_type_dict.items()))
 
-print(common_pokemon_type_dict)
-
 # 2 & 3
 with open('pokemonTrain.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile)
@@ -113,9 +111,6 @@ with open('pokemonTrain.csv', newline='') as csvfile:
             for weakness, pokemon_type in common_pokemon_type_dict.items():
                 if weakness == row['weakness']:
                     row['type'] = pokemon_type
-
-            if row['id'] == '136.0':
-                print(row)
         if float(row['level']) <= 40:
             if row['atk'] == 'NaN':
                 row['atk'] = atk_till_40
