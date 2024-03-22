@@ -1,0 +1,3 @@
+covid_doc1.txt
+covid_doc2.txt
+covid_doc3.txt

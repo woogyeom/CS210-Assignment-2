@@ -1,0 +1,1 @@
+[('cause', 0.13), ('coronaviruses', 0.1), ('bronchitis', 0.08), ('pneumonia', 0.08), ('bacterial', 0.05)]

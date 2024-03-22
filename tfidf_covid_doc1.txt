@@ -1,0 +1,1 @@
+[('disease', 0.16), ('illness', 0.06), ('coronavirus', 0.04), ('covid19', 0.04), ('like', 0.04)]
